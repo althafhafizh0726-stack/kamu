@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6e8e6">
+  <meta name="description" content="Sebuah album kecil berisi cerita kita.">
+  <title>Sebuah Cerita Kecil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/story-data.js" defer></script>
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <div class="page-grain" aria-hidden="true"></div>
+  <div class="vinyl-layer" aria-hidden="true">
+    <img class="vinyl-record vinyl-small" src="assets/images/piringan-hitam.png" alt="" fetchpriority="low">
+    <img class="vinyl-record vinyl-large" src="assets/images/piringan-hitam.png" alt="" fetchpriority="low">
+  </div>
+  <main>
+    <section class="intro" id="intro" aria-labelledby="intro-title">
+      <div class="intro-card">
+        <span class="intro-kicker">ALBUM KENANGAN KECIL</span>
+        <div class="intro-heart" aria-hidden="true">♡</div>
+        <p class="intro-note" id="intro-note"></p>
+        <h1 id="intro-title"></h1>
+        <p class="intro-copy" id="intro-copy"></p>
+        <button class="open-button" id="open-story" type="button"><span>Buka Cerita</span><span aria-hidden="true">↗</span></button>
+        <p class="music-note">putar pelan-pelan, ya <span aria-hidden="true">♫</span></p>
+      </div>
+      <div class="intro-photo" aria-hidden="true">
+        <span class="tape tape-intro"></span>
+        <div class="intro-photo-inner"><img src="assets/images/foto-01.jpg" alt=""></div>
+        <span class="intro-photo-caption">our little world</span>
+      </div>
+      <span class="intro-spark spark-one" aria-hidden="true">✳</span><span class="intro-spark spark-two" aria-hidden="true">✳</span>
+    </section>
+
+    <section class="story" id="story" aria-label="Album cerita">
+      <header class="story-header">
+        <span class="section-eyebrow">DIBUAT DENGAN SAYANG</span>
+        <p class="story-title" id="story-title"></p>
+        <span class="header-rule" aria-hidden="true"></span>
+      </header>
+      <div class="scene-list" id="scene-list" aria-live="polite"></div>
+      <section class="ending" id="ending" aria-labelledby="ending-title" hidden>
+        <span class="ending-flower" aria-hidden="true">✿</span>
+        <p class="section-eyebrow">SAMPAI JUMPA DI KENANGAN BERIKUTNYA</p>
+        <h2 id="ending-title"></h2>
+        <p class="ending-copy" id="ending-copy"></p>
+        <button class="replay-button" id="replay-story" type="button">Dengarkan lagi <span aria-hidden="true">↻</span></button>
+      </section>
+    </section>
+  </main>
+  <aside class="player" id="player" aria-label="Kontrol musik" hidden>
+    <button class="player-toggle" id="player-toggle" type="button" aria-label="Jeda lagu"><span class="play-icon">Ⅱ</span></button>
+    <div class="player-track"><div class="player-meta"><span id="track-name"></span><span class="player-time"><span id="current-time">0:00</span><span class="time-divider"> / </span><span id="duration">0:00</span></span></div>
+      <input id="seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posisi lagu" disabled>
+    </div>
+    <span class="player-music" aria-hidden="true">♫</span>
+  </aside>
+  <div class="audio-message" id="audio-message" role="status" aria-live="polite" hidden></div>
+  <audio id="music" preload="metadata" playsinline></audio>
+</body>
+</html>
