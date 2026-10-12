@@ -92,7 +92,7 @@ main { position: relative; z-index: 1; }
 .player-toggle { flex: 0 0 40px; width: 40px; height: 40px; border: 0; border-radius: 50%; background: var(--wine); color: white; cursor: pointer; font-size: 14px; }
 .player-track { flex: 1; min-width: 0; }
 .player-meta { display: flex; justify-content: space-between; gap: 8px; color: #5f3a3b; font-size: 10px; }
-.player-time { flex: 0 0 auto; color: #987e75; font-variant-numeric: tabular-nums; }
+.player-time { display: none; }
 .player-music { flex: 0 0 auto; color: #a76470; font-size: 18px; }
 #seek { display: block; width: 100%; height: 15px; margin: 5px 0 0; accent-color: var(--wine); cursor: pointer; }
 #seek:disabled { opacity: .4; cursor: wait; }
@@ -102,12 +102,13 @@ main { position: relative; z-index: 1; }
 @keyframes intro-out { to { opacity: 0; transform: translateY(-12px) scale(.985); visibility: hidden; } }
 @keyframes spin-vinyl { to { transform: rotate(1turn); } }
 @media (max-width: 680px) {
-  .intro { min-height: 100vh; min-height: 100svh; padding: 24px 17px 34px; }
+  .intro { min-height: 100vh; min-height: 100svh; padding: 24px 17px 34px; grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; gap: 12px; }
   .intro::before { inset: 4% 3.5%; }
   .intro-card { padding-top: 30px; padding-bottom: 27px; }
-  .intro-photo { right: 5%; bottom: 3%; width: 78px; padding: 5px 5px 19px; opacity: .92; }
-  .intro-photo-inner { height: 75px; }
-  .intro-photo-caption { font-size: 11px; bottom: 2px; }
+  .intro-photo { position: relative; grid-row: 1; justify-self: center; right: auto; bottom: auto; width: 120px; padding: 7px 7px 23px; opacity: .92; transform: rotate(4deg); }
+  .intro-card { grid-row: 2; }
+  .intro-photo-inner { height: 120px; }
+  .intro-photo-caption { font-size: 12px; bottom: 3px; }
   .story { padding: 23px 14px 130px; }
   .story-header { min-height: 145px; }
   .scene-list { gap: 17px; }
@@ -135,8 +136,8 @@ main { position: relative; z-index: 1; }
   .intro { padding-inline: 13px; }
   .intro-card { padding-inline: 19px; }
   .intro-copy { font-size: 12px; }
-  .intro-photo { right: 3%; width: 68px; }
-  .intro-photo-inner { height: 67px; }
+  .intro-photo { width: 105px; }
+  .intro-photo-inner { height: 105px; }
   .story { padding-inline: 10px; }
   .scene { grid-template-rows: minmax(0, 1fr) minmax(175px, .85fr); padding-inline: 5px; }
   .scene-paper, .scene:nth-child(even) .scene-paper { padding-inline: 19px; }

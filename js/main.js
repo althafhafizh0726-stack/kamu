@@ -1,4 +1,4 @@
-(() => {
+ (() => {
   "use strict";
   const data = window.STORY_DATA;
   const $ = (selector) => document.querySelector(selector);
