@@ -17,7 +17,39 @@
   let started = false;
   let userPaused = false;
   let scrollTimer;
+  let autoScrollFrame = null;
   let lastUserScroll = 0;
+
+  function cancelAutoScroll() {
+    if (autoScrollFrame !== null) {
+      cancelAnimationFrame(autoScrollFrame);
+      autoScrollFrame = null;
+    }
+  }
+
+  function smoothlyFocus(element) {
+    if (!element) return;
+    cancelAutoScroll();
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const rect = element.getBoundingClientRect();
+    const startY = window.scrollY;
+    const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const targetY = Math.max(0, Math.min(maxY, startY + rect.top - (window.innerHeight - rect.height) / 2));
+    if (reduced || Math.abs(targetY - startY) < 2) {
+      window.scrollTo(0, targetY);
+      return;
+    }
+    const duration = 850;
+    const startedAt = performance.now();
+    const step = (now) => {
+      const progress = Math.min(1, (now - startedAt) / duration);
+      const eased = progress < .5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+      window.scrollTo(0, startY + (targetY - startY) * eased);
+      if (progress < 1) autoScrollFrame = requestAnimationFrame(step);
+      else autoScrollFrame = null;
+    };
+    autoScrollFrame = requestAnimationFrame(step);
+  }
 
   const formatTime = (seconds) => {
     if (!Number.isFinite(seconds)) return "0:00";
@@ -37,8 +69,8 @@
 
   function buildScenes() {
     list.innerHTML = data.scenes.map((scene, index) => `
-      <article class="scene scene-${scene.layout || "hero"}" id="scene-${index}" data-scene="${index}">
-        <div class="scene-photo-wrap"><span class="scene-tape" aria-hidden="true"></span><figure class="scene-photo"><img src="${scene.image}" alt="Kenangan ${String(index + 1).padStart(2, "0")}" loading="${index < 2 ? "eager" : "lazy"}" decoding="async"><span class="photo-number">${String(index + 1).padStart(2, "0")} / ${String(data.scenes.length).padStart(2, "0")}</span></figure><span class="photo-spark" aria-hidden="true">✳</span></div>
+      <article class="scene scene-${scene.layout || "hero"}${[6, 7, 12, 13].includes(index) ? " scene-birthday" : ""}" id="scene-${index}" data-scene="${index}">
+        <div class="scene-photo-wrap"><span class="scene-tape" aria-hidden="true"></span><figure class="scene-photo"><img src="${scene.image}" alt="Kenangan ${String(index + 1).padStart(2, "0")}" loading="${index < 2 ? "eager" : "lazy"}" decoding="async"><span class="photo-number">${String(index + 1).padStart(2, "0")} / ${String(data.scenes.length).padStart(2, "0")}</span></figure>${[6, 7, 12, 13].includes(index) ? '<span class="birthday-firework firework-one" aria-hidden="true">&#10022;</span><span class="birthday-firework firework-two" aria-hidden="true">&#10022;</span><span class="birthday-firework firework-three" aria-hidden="true">&#10022;</span><span class="birthday-balloon balloon-one" aria-hidden="true"></span><span class="birthday-balloon balloon-two" aria-hidden="true"></span><span class="birthday-confetti confetti-one" aria-hidden="true">&#10022;</span><span class="birthday-confetti confetti-two" aria-hidden="true">&#10047;</span><span class="birthday-confetti confetti-three" aria-hidden="true">&#10022;</span><span class="birthday-badge" aria-hidden="true">HBD!</span><span class="birthday-cake" aria-hidden="true"><span class="cake-candle"><i></i></span><span class="cake-top"></span><span class="cake-body"><i></i><i></i><i></i></span><span class="cake-plate"></span></span>' : ""}<span class="photo-spark" aria-hidden="true">✳</span></div>
         <div class="scene-paper"><span class="scene-index">SEBUAH POTONGAN KECIL · ${String(index + 1).padStart(2, "0")}</span><blockquote class="scene-lyric">${scene.lyric || ""}</blockquote><span class="lyric-mark" aria-hidden="true">“</span><p class="scene-caption">${scene.caption || ""}</p><span class="scene-time">${formatTime(scene.start)}</span></div>
       </article>`).join("");
     list.querySelectorAll("img").forEach((img) => img.addEventListener("error", () => {
@@ -50,19 +82,25 @@
   function syncScene(force = false) {
     const next = sceneAt(audio.currentTime || 0);
     if (next < 0 || (!force && next === activeScene)) return;
+    const previousScene = activeScene;
     activeScene = next;
     list.querySelectorAll(".scene").forEach((card, index) => {
       card.classList.toggle("is-active", index === activeScene);
       card.classList.toggle("is-past", index < activeScene);
+      card.classList.remove("is-arriving");
     });
+    if (previousScene >= 0 && previousScene !== activeScene) {
+      const arrivingCard = $(`#scene-${activeScene}`);
+      arrivingCard.classList.add("is-arriving");
+      arrivingCard.addEventListener("animationend", () => arrivingCard.classList.remove("is-arriving"), { once: true });
+    }
     if (!started) return;
     const card = $(`#scene-${activeScene}`);
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const idle = Date.now() - lastUserScroll > 4200;
     if (card && idle && !userPaused) {
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(() => {
-        if (!userPaused && Date.now() - lastUserScroll > 4200) card.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+        if (!userPaused && Date.now() - lastUserScroll > 4200) smoothlyFocus(card);
       }, 350);
     }
   }
@@ -145,6 +183,7 @@
   $("#replay-story").addEventListener("click", () => { audio.currentTime = 0; ending.hidden = true; list.classList.remove("story-finished"); startPlayback(); });
   function noteManualScroll(event) {
     if (event.target instanceof Element && event.target.closest(".player, button, input, textarea, select")) return;
+    cancelAutoScroll();
     lastUserScroll = Date.now();
     clearTimeout(scrollTimer);
   }
