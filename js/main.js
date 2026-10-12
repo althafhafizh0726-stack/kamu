@@ -120,17 +120,26 @@
     $("#player-toggle").setAttribute("aria-label", "Putar lagi");
     $(".play-icon").textContent = "▶";
   }
-  async function startPlayback() {
+  function startPlayback() {
     audioMessage.hidden = true;
+    // Reveal and move to the story before starting media work, so slow audio
+    // startup cannot delay the visual response to the tap.
+    userPaused = false;
+    started = false;
+    story.classList.add("is-visible");
+    player.hidden = false;
+    syncScene(true);
+    started = true;
+    story.querySelector(".story-header").scrollIntoView({ behavior: "smooth", block: "start" });
     try {
-      await audio.play();
-      userPaused = false;
-      started = true;
-      intro.classList.add("is-leaving");
-      story.classList.add("is-visible");
-      player.hidden = false;
-      syncScene(true);
-      setTimeout(() => story.scrollIntoView({ behavior: "smooth", block: "start" }), 180);
+      const playback = audio.play();
+      if (playback && typeof playback.catch === "function") {
+        playback.catch((error) => {
+          audioMessage.textContent = "Lagu belum bisa diputar. Periksa file audio, lalu coba lagi.";
+          audioMessage.hidden = false;
+          console.error("Audio playback failed", error);
+        });
+      }
     } catch (error) {
       audioMessage.textContent = "Lagu belum bisa diputar. Periksa file audio, lalu coba lagi.";
       audioMessage.hidden = false;

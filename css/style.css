@@ -46,8 +46,7 @@ main { position: relative; z-index: 1; }
 .intro-spark { position: absolute; color: #a95b66; font-size: 19px; }
 .spark-one { top: 16%; left: 14%; }.spark-two { top: 27%; right: 12%; font-size: 13px; }
 .story { display: none; width: min(100%, 1100px); margin: 0 auto; padding: 44px 18px 150px; opacity: 0; }
-.story.is-visible { display: block; animation: appear .8s ease forwards; }
-.intro.is-leaving { animation: intro-out .65s ease forwards; }
+.story.is-visible { display: block; opacity: 1; }
 .story-header { min-height: 185px; padding: 25px 12px 34px; display: grid; align-content: center; justify-items: center; text-align: center; }
 .story-title { margin: 6px 0 15px; font: italic 600 clamp(30px, 8vw, 48px)/1.12 "Playfair Display", Georgia, serif; color: var(--wine-dark); }
 .header-rule { width: 74px; height: 1px; background: #ad7575; position: relative; }
@@ -130,7 +129,6 @@ main { position: relative; z-index: 1; }
 .audio-message { position: fixed; z-index: 30; top: 15px; left: 50%; transform: translateX(-50%); width: min(calc(100% - 26px), 400px); padding: 13px 16px; background: #fff1e8; border-left: 3px solid #9f394b; color: #572b30; box-shadow: var(--shadow); font-size: 12px; text-align: center; }
 .audio-message[hidden] { display: none; }
 @keyframes appear { to { opacity: 1; } }
-@keyframes intro-out { to { opacity: 0; transform: translateY(-12px) scale(.985); visibility: hidden; } }
 @keyframes spin-vinyl { to { transform: rotate(1turn); } }
 @media (max-width: 680px) {
   .intro { min-height: 100vh; min-height: 100svh; padding: 24px 17px 34px; grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: center; gap: 12px; }
@@ -162,6 +160,21 @@ main { position: relative; z-index: 1; }
   .player-meta { font-size: 9px; }
   .vinyl-small { width: clamp(82px, 25vw, 112px); top: -27px; left: -30px; opacity: .2; }
   .vinyl-large { width: clamp(190px, 54vw, 250px); right: -72px; bottom: -76px; opacity: .22; }
+}
+/* Keep touch devices responsive by avoiding full-screen filters and continuous
+   decorative animations while preserving the scrapbook layout. */
+@media (hover: none), (pointer: coarse) {
+  .page-grain { display: none; }
+  .vinyl-record { filter: none; }
+  .player { background: #fffaf2f5; backdrop-filter: none; -webkit-backdrop-filter: none; }
+  .scene { transition-duration: .35s; }
+  .scene-photo img { transition-duration: .35s; }
+  .scene-birthday.is-active .birthday-firework,
+  .scene-birthday.is-active .birthday-balloon,
+  .scene-birthday.is-active .birthday-confetti,
+  .scene-birthday.is-active .birthday-badge { animation-play-state: paused; }
+  .scene-birthday.is-active .birthday-cake { animation: cake-bob 2.2s ease-in-out infinite; }
+  .scene-birthday.is-active .cake-candle i { animation: candle-flicker .6s ease-in-out infinite alternate; }
 }
 @media (max-width: 360px) {
   .intro { padding-inline: 13px; }
