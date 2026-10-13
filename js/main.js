@@ -24,7 +24,9 @@
     const rect = element.getBoundingClientRect();
     const startY = window.scrollY;
     const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    const targetY = Math.max(0, Math.min(maxY, startY + rect.top - (window.innerHeight - rect.height) / 2));
+    const playerHeight = player && !player.hidden ? player.getBoundingClientRect().height + 16 : 0;
+    const visibleHeight = Math.max(0, window.innerHeight - playerHeight);
+    const targetY = Math.max(0, Math.min(maxY, startY + rect.top - (visibleHeight - rect.height) / 2));
     window.scrollTo(0, targetY);
   }
 

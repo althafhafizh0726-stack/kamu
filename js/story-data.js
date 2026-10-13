@@ -21,7 +21,7 @@ window.STORY_DATA = {
       layout: "hero",
     },
     {
-      start: 5,
+      start: 4,
       end: 10,
       lyric: "Kemungkinan orang di dunia kamu dapatnya aku",
       caption: "Satu kebetulan yang selalu ingin kusyukuri.",
