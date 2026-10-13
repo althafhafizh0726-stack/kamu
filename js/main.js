@@ -17,38 +17,15 @@
   let started = false;
   let userPaused = false;
   let scrollTimer;
-  let autoScrollFrame = null;
   let lastUserScroll = 0;
-
-  function cancelAutoScroll() {
-    if (autoScrollFrame !== null) {
-      cancelAnimationFrame(autoScrollFrame);
-      autoScrollFrame = null;
-    }
-  }
 
   function smoothlyFocus(element) {
     if (!element) return;
-    cancelAutoScroll();
-    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const rect = element.getBoundingClientRect();
     const startY = window.scrollY;
     const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
     const targetY = Math.max(0, Math.min(maxY, startY + rect.top - (window.innerHeight - rect.height) / 2));
-    if (reduced || Math.abs(targetY - startY) < 2) {
-      window.scrollTo(0, targetY);
-      return;
-    }
-    const duration = 850;
-    const startedAt = performance.now();
-    const step = (now) => {
-      const progress = Math.min(1, (now - startedAt) / duration);
-      const eased = progress < .5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-      window.scrollTo(0, startY + (targetY - startY) * eased);
-      if (progress < 1) autoScrollFrame = requestAnimationFrame(step);
-      else autoScrollFrame = null;
-    };
-    autoScrollFrame = requestAnimationFrame(step);
+    window.scrollTo(0, targetY);
   }
 
   const formatTime = (seconds) => {
@@ -192,7 +169,6 @@
   $("#replay-story").addEventListener("click", () => { audio.currentTime = 0; ending.hidden = true; list.classList.remove("story-finished"); startPlayback(); });
   function noteManualScroll(event) {
     if (event.target instanceof Element && event.target.closest(".player, button, input, textarea, select")) return;
-    cancelAutoScroll();
     lastUserScroll = Date.now();
     clearTimeout(scrollTimer);
   }
